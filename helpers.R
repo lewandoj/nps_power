@@ -1,3 +1,6 @@
+#This file contains all helper functions to run simulation in this project
+
+#Options
 setwd("C:/Users/Palmer/Google Drive/R projects/nps_power")
 options(scipen=999)
 
@@ -33,7 +36,7 @@ bootstrap <- function(data, numOfSamples, pctOfCasesFromPopulation, statistic, a
   ordered <- sort(savedStat)
   #Caculuate upper and lower alpha values (divided by 2 bc it's a 2-tail test), save results as a list
   CI <- quantile(ordered, c(1-(1-(alpha/2)), (1-(alpha/2))), type = 4)
-  #lowerCI <- quantile(ordered, 1-(1-(alpha/2)))
+  
   result <- list(savedStat, CI)
   names(result) <- c("savedStat", "CIs")
   
@@ -51,18 +54,19 @@ bootstrapDiffs <- function(sample1, sample2, maxTimesResampled, pctOfCasesFromSa
     #Generate a sample from data
     sample1_resample <- sample(sample1, (length(sample1) * pctOfCasesFromSamples), replace = TRUE)
     sample2_resample <- sample(sample2, (length(sample2) * pctOfCasesFromSamples), replace = TRUE)
+    
     #Apply that statistic to the sample
     calculate_statistic <- pctDiff(applyStatistic(sample1_resample), applyStatistic(sample2_resample))
-    #calculate_statistic <- applyStatistic(sample1_resample) - applyStatistic(sample2_resample) #OLD
     
     #Create object savedStat to hold result from each resample
     savedStat[i] <- calculate_statistic
   }
   #Order all results
   sortedStat <- sort(savedStat)
+  
   #Caculuate upper and lower alpha values (divided by 2 bc it's a 2-tail test), save results as a list
   CI <- quantile(sortedStat, c((1-(1-(alpha/2))), (1-(alpha/2))), type = 5, na.rm = TRUE)
-  #lowerCI <- quantile(ordered, 1-(1-(alpha/2)))
+  
   result <- list(savedStat, CI)
   names(result) <- c("savedStat", "CIs")
   
@@ -142,14 +146,13 @@ compare2SampleSets <- function(p1, p2,
   result$source[(length(bsnpsDiffs)+1):nrow(result)] <- "npsCI"
   
   result$truediff <- pctDiff(mean(p1), mean(p2))
-    #result$truediff[result$source == "meanCI"] <- (mean(p1) - mean(p2))
-    #result$truediff[result$source == "npsCI"] <- (convertNPS10(p1) - convertNPS10(p2))
-  #test if CIs contain truediff
+  
+  #Test if CIs contain truediff
   result$containsTrueDiff <- (result$truediff > result$`2.5%`) & (result$truediff < result$`97.5%`)
   return(result)
 }
 
-#Generate a population of user responses on NPS scale
+#Generate a population of user responses on a scale of range frmo scaleMin to scaleMax
 generateNormalPopulation <- function(sizeofPopulation, scaleMin, scaleMax, scaleMean = NULL, scaleSD = NULL) {
   round(rtruncnorm(n = sizeofPopulation,
                    a = scaleMin, 
