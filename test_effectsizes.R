@@ -9,8 +9,7 @@
 #step 5. count total misses per population-pair diff
 
 #Setup
-setwd("C:/Users/Palmer/Google Drive/R projects/nps_power")
-source("C:/Users/Palmer/Google Drive/R projects/nps_power/helpers.R")
+source("helpers.R")
 options(scipen=999)
 set.seed(111)
 

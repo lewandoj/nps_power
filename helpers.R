@@ -1,7 +1,6 @@
 #This file contains all helper functions to run simulation in this project
 
 #Options
-setwd("C:/Users/Palmer/Google Drive/R projects/nps_power")
 options(scipen=999)
 
 #Libraries

@@ -19,8 +19,7 @@
 # HYPOTHESIS
 # If NPS performs as well as the mean, it should contain the true difference as often as the mean. 
 
-setwd("C:/Users/Palmer/Google Drive/R projects/nps_power")
-source("C:/Users/Palmer/Google Drive/R projects/nps_power/helpers.R")
+source("helpers.R")
 options(scipen=999)
 
 
