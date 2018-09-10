@@ -64,7 +64,8 @@ bootstrapDiffs <- function(sample1, sample2, maxTimesResampled, pctOfCasesFromSa
   sortedStat <- sort(savedStat)
   
   #Caculuate upper and lower alpha values (divided by 2 bc it's a 2-tail test), save results as a list
-  CI <- quantile(sortedStat, c((1-(1-(alpha/2))), (1-(alpha/2))), type = 5, na.rm = TRUE)
+  CI <- quantile(sortedStat, c((alpha/2), (1-(alpha/2))), type = 5, na.rm = TRUE)
+  #CI <- quantile(sortedStat, c((1-(1-(alpha/2))), (1-(alpha/2))), type = 5, na.rm = TRUE)
   
   result <- list(savedStat, CI)
   names(result) <- c("savedStat", "CIs")
@@ -81,9 +82,9 @@ bootstrapDiffs <- function(sample1, sample2, maxTimesResampled, pctOfCasesFromSa
 convertNPS10 <- function(data) {
   #Recode: {9,10} are promoters; {7,8} are neutrals; {1,2,3,4,5,6} are detractors    
   total <- length(data)
-  pctPromoters <- length(data[data > 8])/total
-  pctNeutrals <- length(data[data == 7 | data == 8])/total
-  pctDetractors <- length(data[data < 7])/total
+  pctPromoters <- length(data[data > 8]) / total
+  pctNeutrals <- length(data[data == 7 | data == 8]) / total
+  pctDetractors <- length(data[data < 7]) / total
     
   nps <- ((1 * pctPromoters) + (0 * pctNeutrals) + (-1 * pctDetractors)) * 100
   return(nps)
@@ -92,9 +93,9 @@ convertNPS10 <- function(data) {
 convertNPS7 <- function(data){
   #Recode: {6,7} are promoters; {5,6} are neutrals; {1,2,3,4} are detractors
   total <- length(data)
-  pctPromoters <- length(data[data > 5])/total
-  pctNeutrals <- length(data[data == 5 | data == 6])/total
-  pctDetractors <- length(data[data < 5])/total
+  pctPromoters <- length(data[data > 5]) / total
+  pctNeutrals <- length(data[data == 5 | data == 6]) / total
+  pctDetractors <- length(data[data < 5]) / total
   
   nps <- ((1 * pctPromoters) + (0 * pctNeutrals) + (-1 * pctDetractors)) * 100
   return (nps)
@@ -103,14 +104,35 @@ convertNPS7 <- function(data){
 convertNPS5 <- function(data){
     #Recode: {4,5} are promoters; {3} is neutral; {1,2} are detractors
     total <- length(data)
-    pctPromoters <- length(data[data > 3])/total
-    pctNeutrals <- length(data[data == 3])/total
-    pctDetractors <- length(data[data < 3])/total
+    pctPromoters <- length(data[data > 3]) / total
+    pctNeutrals <- length(data[data == 3]) / total
+    pctDetractors <- length(data[data < 3]) / total
     
     nps <- ((1 * pctPromoters) + (0 * pctNeutrals) + (-1 * pctDetractors))
     return(nps)
     
   }
+
+#Top 2 box conversion
+#Args: data = a vector of integers with a max of 10, 7, or 5 points on the scale
+#Returns: Percent of values appearing in the top two responses. Can range from 0 to 100
+convertTopTwo10 <- function(data) {
+  total <- length(data)
+  pcttop2 <- (length(data[data == 9 | data == 10]) / total) * 100
+  return(pcttop2)
+}
+
+convertTopTwo7 <- function(data) {
+  total <- length(data)
+  pcttop2 <- (length(data[data == 6 | data == 7]) / total) * 100
+  return(pcttop2)
+}
+
+convertTopTwo5 <- function(data) {
+  total <- length(data)
+  pcttop2 <- (length(data[data == 4 | data == 5]) / total) * 100
+  return(pcttop2)
+}
 
 # Compare two sets of samples to population. 
 # Each row is the difference between two bootstrapped samples and whether that boostrap CI contains the pop diff
