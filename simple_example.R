@@ -35,10 +35,12 @@ nps_pdiff <- pctDiff(convertNPS10(a), convertNPS10(b)) #Zero% difference (-40 --
 #Calculate CI of percent differences. 
 #Evaluate whether the CI contains the true mean percent difference. 
 simdata <- compare2SampleSets(a, b, 
-                           numOfGeneratedSamples = 500, 
-                           pctSizeOfGeneratedSample = .1, 
-                           numOfResamples = 200, 
-                           pctSizeOfResample = 1)
+                              summaryStat1 = mean,
+                              summaryStat2 = convertNPS10,
+                              numOfGeneratedSamples = 500, 
+                              pctSizeOfGeneratedSample = .1, 
+                              numOfResamples = 200, 
+                              pctSizeOfResample = 1)
 
 #ANALYSIS
 #Count number of misses for NPS vs. Mean

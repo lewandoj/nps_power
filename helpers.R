@@ -146,6 +146,8 @@ convertTopTwo5 <- function(data) {
 # true population diff value
 # bool of whether the CI contains the pop diff
 compare2SampleSets <- function(p1, p2, 
+                               summaryStat1 = mean, 
+                               summaryStat2 = convertNPS10,
                                numOfGeneratedSamples = 50, pctSizeOfGeneratedSample = .01, 
                                numOfResamples = 100, pctSizeOfResample = 1.0) {
 
@@ -154,21 +156,22 @@ compare2SampleSets <- function(p1, p2,
   second <- resampler(p2, numOfGeneratedSamples, pctSizeOfGeneratedSample)
   
   #Calculate difference in mean/NPS for each sample and boostrap those differences
-  bsMeanDiffs <- c()
-  bsnpsDiffs <- c()
+  bsDiff_summaryStat1 <- c()
+  bsDiff_summaryStat2 <- c()
   for (i in 1:numOfGeneratedSamples) {
-    bsMeanDiffs[[i]] <- bootstrapDiffs(first[[i]], second[[i]], numOfResamples, pctSizeOfResample, mean)$CIs 
-    bsnpsDiffs[[i]] <- bootstrapDiffs(first[[i]], second[[i]], numOfResamples, pctSizeOfResample, convertNPS10)$CIs
+    bsDiff_summaryStat1[[i]] <- bootstrapDiffs(first[[i]], second[[i]], numOfResamples, pctSizeOfResample, summaryStat1)$CIs
+    bsDiff_summaryStat2[[i]] <- bootstrapDiffs(first[[i]], second[[i]], numOfResamples, pctSizeOfResample, summaryStat2)$CIs 
+    #bsMeanDiffs[[i]] <- bootstrapDiffs(first[[i]], second[[i]], numOfResamples, pctSizeOfResample, mean)$CIs 
+    #bsnpsDiffs[[i]] <- bootstrapDiffs(first[[i]], second[[i]], numOfResamples, pctSizeOfResample, convertNPS10)$CIs
   }
-  result <- as.data.frame(do.call(rbind, c(bsMeanDiffs, bsnpsDiffs)))
+  result <- as.data.frame(do.call(rbind, c(bsDiff_summaryStat1, bsDiff_summaryStat2)))
   
   #rename source column
-  result$source[1:length(bsMeanDiffs)] <- "meanCI"
-  result$source[(length(bsnpsDiffs)+1):nrow(result)] <- "npsCI"
-  
-  result$truediff <- pctDiff(mean(p1), mean(p2))
+  result$source[1:length(bsDiff_summaryStat1)] <- paste0(toString(substitute(summaryStat1)), "_CI")
+  result$source[(length(bsDiff_summaryStat2)+1):nrow(result)] <- paste0(toString(substitute(summaryStat2)), "_CI")
   
   #Test if CIs contain truediff
+  result$truediff <- pctDiff(mean(p1), mean(p2))
   result$containsTrueDiff <- (result$truediff > result$`2.5%`) & (result$truediff < result$`97.5%`)
   return(result)
 }
