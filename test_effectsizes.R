@@ -39,8 +39,8 @@ diffTest <- function(totalPopulations, numOfSamples) {
     
     #Simulate bootstrapping and count number of times CI does not contain true diff (the CI "missed")
     simdata <- compare2SampleSets(a, b, numOfGeneratedSamples = numOfSamples, numOfResamples = 200)
-    simulate_mean_num_missed[eachpop] <- nrow(simdata[simdata$source == "meanCI" & simdata$containsTrueDiff == FALSE,]) #/ nrow(simulate[simulate$source == "meanCI",])
-    simulate_nps_num_missed[eachpop] <- nrow(simdata[simdata$source == "npsCI" & simdata$containsTrueDiff == FALSE,]) #/ nrow(simulate[simulate$source == "npsCI",])
+    simulate_mean_num_missed[eachpop] <- nrow(simdata[simdata$source == "mean_CI" & simdata$containsTrueDiff == FALSE,]) #/ nrow(simulate[simulate$source == "meanCI",])
+    simulate_nps_num_missed[eachpop] <- nrow(simdata[simdata$source == "convertNPS10_CI" & simdata$containsTrueDiff == FALSE,]) #/ nrow(simulate[simulate$source == "npsCI",])
     
     #Calculate CI range and compute average range pre source(NPS vs. Mean)
     #simdata$ci_range <- simdata$`97.5%` - simdata$`2.5%`
@@ -76,6 +76,16 @@ time_nps_misses <- sum(sout$nps_misses) / sum(sout$mean_misses)
 #Measure the width of the CI for both
 #TODO
 
+#Calculcate the correlation of the original dataset with the average correlation of each sample of Mean vs. NPS
+#TODO
+
+#What is the reliability of each sample? 
+#TODO
+
+#As sample size increases, how large to CIs become?
+#TODO
+
+
 #GRAPHS
 #Plot the size of the population differences by the number of misses for Mean and NPS
 ggplot(data = sout, aes(x = pdiffs)) + 
@@ -96,7 +106,7 @@ ggplot(sout, aes(x = aMean, y = bMean, color = nps_misses, size = pdiffs, alpha 
 ggplot(data = ab, aes(x = ab$abs_pdiff)) + 
   geom_point(aes(y = cumsum(nps_misses), color = "nps")) +
   geom_point(aes(y = cumsum(mean_misses), color = "mean")) + 
-  ylab("Cumulative # of Misses") + xlab("Average Population Difference")
+  ylab("Cumulative # of Misses") + xlab("Abs Population Difference. Mean(a) - Mean(b)")
 
 
 
