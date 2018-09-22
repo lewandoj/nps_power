@@ -176,6 +176,45 @@ compare2SampleSets <- function(p1, p2,
   return(result)
 }
 
+compare2SampleSetskWay <- function(p1, p2, 
+                                   summaryStats = list(mean = mean, 
+                                                       nps10 = convertNPS10), 
+                                   numOfGeneratedSamples = 50, pctSizeOfGeneratedSample = .01, 
+                                   numOfResamples = 100, pctSizeOfResample = 1.0) {
+  
+  #Sample each population 'numOfGeneratedSamples' times using .1% of population
+  first <- resampler(p1, numOfGeneratedSamples, pctSizeOfGeneratedSample)
+  second <- resampler(p2, numOfGeneratedSamples, pctSizeOfGeneratedSample)
+  
+  #Create empty_df of length(numOfGeneratedSamples) and duplicate empty_df length(summaryStats) num of times 
+  empty_df <- data.frame(samplenum = 1:numOfGeneratedSamples,
+                         `2.5%` = c(rep(NA, times = numOfGeneratedSamples)),
+                         `97.5%` = c(rep(NA, times = numOfGeneratedSamples)))
+  df_list <- replicate(length(summaryStats), empty_df, simplify = FALSE)
+  names(df_list) <- names(summaryStats)
+  
+  #Calculate difference using each summaryStat for each sample. Boostrap those differences. Return the upper and lower CIs.
+  #For each summaryStat and sample, insert those two CI values into a row in df_list.
+  for (eachSummaryStat in 1:length(summaryStats)) {
+    for (eachGeneratedSample in 1:numOfGeneratedSamples) {
+      df_list[[eachSummaryStat]][eachGeneratedSample, 2:3] <- bootstrapDiffs(first[[eachGeneratedSample]], 
+                                                                             second[[eachGeneratedSample]], 
+                                                                             numOfResamples, 
+                                                                             pctSizeOfResample, 
+                                                                             summaryStats[[eachSummaryStat]])$CIs 
+    }
+  }
+  #Test if CIs contain truediff
+  df_list <- lapply(df_list, 
+                    function(x) cbind(x, popdiff = pctDiff(mean(p1), mean(p2))))
+  df_list <- lapply(df_list, 
+                    function(x) cbind(x, containsTrueDiff = (df_list$popdiff > df_list$`2.5%`) & (df_list$popdiff < df_list$`97.5%`)))
+  
+  #result$truediff <- pctDiff(mean(p1), mean(p2))
+  #result$containsTrueDiff <- (result$truediff > result$`2.5%`) & (result$truediff < result$`97.5%`)
+  return(df_list)
+}
+
 #Generate a population of user responses on a scale of range frmo scaleMin to scaleMax
 generateNormalPopulation <- function(sizeofPopulation, scaleMin, scaleMax, scaleMean = NULL, scaleSD = NULL) {
   round(rtruncnorm(n = sizeofPopulation,
