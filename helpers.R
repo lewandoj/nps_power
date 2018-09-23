@@ -206,13 +206,13 @@ compare2SampleSetskWay <- function(p1, p2,
   }
   #Test if CIs contain truediff
   df_list <- lapply(df_list, 
-                    function(x) cbind(x, popdiff = pctDiff(mean(p1), mean(p2))))
-  df_list <- lapply(df_list, 
-                    function(x) cbind(x, containsTrueDiff = (df_list$popdiff > df_list$`2.5%`) & (df_list$popdiff < df_list$`97.5%`)))
-  
-  #result$truediff <- pctDiff(mean(p1), mean(p2))
-  #result$containsTrueDiff <- (result$truediff > result$`2.5%`) & (result$truediff < result$`97.5%`)
-  return(df_list)
+                    function(x) cbind(x, 
+                                      popdiff = pctDiff(mean(p1), mean(p2))))
+  #this line isn't working
+  df_list2 <- lapply(df_list, 
+                     function(x) cbind(x, 
+                                       containstruediff = (x$popdiff > x$X2.5.) & (x$popdiff < x$X97.5.)))
+  return(df_list2)
 }
 
 #Generate a population of user responses on a scale of range frmo scaleMin to scaleMax
