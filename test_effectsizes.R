@@ -11,7 +11,6 @@
 #Setup
 source("helpers.R")
 options(scipen=999)
-set.seed(111)
 
 #Libraries
 library(ggplot2)
@@ -85,6 +84,7 @@ time_nps_misses <- sum(sout$nps_misses) / sum(sout$mean_misses)
 #As sample size increases, how large to CIs become?
 #TODO
 
+#As SD decreases, how often does each miss?
 
 #GRAPHS
 #Plot the size of the population differences by the number of misses for Mean and NPS
